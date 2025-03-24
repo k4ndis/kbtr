@@ -2,21 +2,24 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Testbericht Sprachsteuerung</title>
+  <title>Testbericht Deckblatt</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
       padding: 2rem;
-      max-width: 600px;
+      max-width: 800px;
       margin: auto;
+    }
+    h1 {
+      text-align: center;
     }
     label {
       display: block;
       margin-top: 1rem;
       font-weight: bold;
     }
-    input, textarea {
+    input, select, textarea {
       width: 100%;
       padding: 0.5rem;
       margin-top: 0.3rem;
@@ -25,7 +28,22 @@
     textarea {
       resize: vertical;
     }
-    button {
+    .row {
+      display: flex;
+      gap: 1rem;
+    }
+    .col {
+      flex: 1;
+    }
+    .status {
+      font-weight: bold;
+      color: white;
+      padding: 0.5rem;
+      text-align: center;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+    }
+    #voiceBtn {
       margin-top: 2rem;
       padding: 0.8rem 1.2rem;
       font-size: 1rem;
@@ -37,22 +55,117 @@
 </head>
 <body>
 
-  <h1>Testbericht (Sprachsteuerung)</h1>
+  <h1>Test Report – Deckblatt</h1>
 
-  <label for="project">Projekt</label>
-  <input type="text" id="project" placeholder="z. B. FBM" />
+  <label for="report">Report</label>
+  <input type="text" id="report">
 
-  <label for="goal">Ziel</label>
-  <input type="text" id="goal" placeholder="z. B. Lebensdauerprüfung" />
+  <label for="project">Project</label>
+  <input type="text" id="project">
 
-  <label for="summary">Zusammenfassung</label>
-  <textarea id="summary" rows="3" placeholder="Kurze Zusammenfassung…"></textarea>
+  <label for="test">Test</label>
+  <input type="text" id="test">
 
-  <label for="conclusion">Schlussfolgerung</label>
-  <textarea id="conclusion" rows="3" placeholder="z. B. Test nicht bestanden…"></textarea>
+  <label for="dvp">DVP</label>
+  <input type="text" id="dvp">
 
-  <label for="comment">Kommentar</label>
-  <textarea id="comment" rows="2" placeholder="Anmerkungen oder Hinweise…"></textarea>
+  <label for="distribution">Distribution list</label>
+  <select id="distribution" multiple>
+    <option>Bonnet</option>
+    <option>Brenner</option>
+    <option>Neuber</option>
+    <option>Schabinger</option>
+  </select>
+
+  <label for="sample">Test sample</label>
+  <input type="text" id="sample">
+
+  <label for="product">Product</label>
+  <input type="text" id="product">
+
+  <label for="productno">Product number</label>
+  <input type="text" id="productno">
+
+  <label for="drawing">Drawing</label>
+  <input type="text" id="drawing">
+
+  <label for="type">Type of test</label>
+  <input type="text" id="type">
+
+  <label for="objective">Objective</label>
+  <textarea id="objective" rows="2"></textarea>
+
+  <label for="summary">Summary Test results</label>
+  <textarea id="summary" rows="2"></textarea>
+
+  <label for="conclusion">Conclusion</label>
+  <textarea id="conclusion" rows="2"></textarea>
+
+  <label>Test result</label>
+  <div class="row">
+    <div class="col">
+      <input type="checkbox" id="passed" onchange="setResultColor()">
+      <label for="passed">Test passed</label>
+    </div>
+    <div class="col">
+      <input type="checkbox" id="failed" onchange="setResultColor()">
+      <label for="failed">Test failed</label>
+    </div>
+  </div>
+  <div id="resultStatus" class="status"></div>
+
+  <label for="consequence">Consequences / Comments to the conclusion</label>
+  <textarea id="consequence" rows="2"></textarea>
+
+  <label for="similar">Consequences for similar product types</label>
+  <textarea id="similar" rows="2"></textarea>
+
+  <label>Yes / No</label>
+  <select id="yesno">
+    <option>Yes</option>
+    <option>No</option>
+  </select>
+
+  <label for="description">If yes, please describe</label>
+  <textarea id="description" rows="2"></textarea>
+
+  <div class="row">
+    <div class="col">
+      <label for="begin">Test begin</label>
+      <input type="date" id="begin">
+    </div>
+    <div class="col">
+      <label for="end">Test end</label>
+      <input type="date" id="end">
+    </div>
+  </div>
+
+  <label for="testedby">Tested by</label>
+  <select id="testedby">
+    <option>Bonnet</option>
+    <option>Schabinger</option>
+  </select>
+
+  <label for="testeddate">Date</label>
+  <input type="date" id="testeddate">
+
+  <label for="createdby">Created by</label>
+  <select id="createdby">
+    <option>Bonnet</option>
+    <option>Schabinger</option>
+  </select>
+
+  <label for="createddate">Date</label>
+  <input type="date" id="createddate">
+
+  <label for="reviewedby">Reviewed and released by</label>
+  <select id="reviewedby">
+    <option>Bonnet</option>
+    <option>Schabinger</option>
+  </select>
+
+  <label for="annex">Annex (Anhang)</label>
+  <input type="text" id="annex">
 
   <button id="voiceBtn" onclick="toggleRecognition()">🎙️ Start voice input</button>
 
@@ -65,7 +178,7 @@
     function startRecognition() {
       window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new window.SpeechRecognition();
-      recognition.lang = 'de-DE';
+      recognition.lang = ''; // automatische Spracherkennung
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
       recognition.continuous = false;
@@ -86,7 +199,6 @@
 
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript.trim();
-        console.log("Erkannt:", transcript);
         processVoiceInput(transcript);
       };
 
@@ -116,31 +228,24 @@
     function processVoiceInput(transcript) {
       const lower = transcript.toLowerCase();
 
-      // Sonderbefehle: rückgängig, löschen
       if (lower === "rückgängig") {
         if (lastFieldId && fieldHistory[lastFieldId]) {
-          document.getElementById(lastFieldId).value = "";
+          document.getElementById(lastFieldId).value = fieldHistory[lastFieldId];
         }
         return;
       }
 
-      const deleteFieldMatch = lower.match(/^lösche (projekt|ziel|zusammenfassung|schlussfolgerung|kommentar)/);
-      if (deleteFieldMatch) {
-        const idMap = getFieldIdMap();
-        const target = idMap[deleteFieldMatch[1]];
-        if (target) document.getElementById(target).value = "";
+      if (lower.includes("test bestanden")) {
+        document.getElementById("passed").checked = true;
+        document.getElementById("failed").checked = false;
+        setResultColor();
         return;
       }
 
-      const removeWordMatch = lower.match(/^entferne (\w+) bei (projekt|ziel|zusammenfassung|schlussfolgerung|kommentar)/);
-      if (removeWordMatch) {
-        const word = removeWordMatch[1];
-        const idMap = getFieldIdMap();
-        const target = idMap[removeWordMatch[2]];
-        if (target) {
-          const field = document.getElementById(target);
-          field.value = field.value.replace(new RegExp("\\b" + word + "\\b", "gi"), "").trim();
-        }
+      if (lower.includes("test nicht bestanden") || lower.includes("test failed")) {
+        document.getElementById("failed").checked = true;
+        document.getElementById("passed").checked = false;
+        setResultColor();
         return;
       }
 
@@ -151,20 +256,24 @@
       }
 
       const fieldMappings = {
+        report: "report",
         projekt: "project",
         project: "project",
-        ziel: "goal",
-        goal: "goal",
+        test: "test",
+        dvp: "dvp",
+        ziel: "objective",
+        objective: "objective",
         zusammenfassung: "summary",
         summary: "summary",
         schlussfolgerung: "conclusion",
         conclusion: "conclusion",
-        kommentar: "comment",
-        comment: "comment"
+        kommentar: "consequence",
+        consequence: "consequence",
+        ähnlich: "similar",
+        similar: "similar"
       };
 
-      const keys = Object.keys(fieldMappings);
-      for (let key of keys) {
+      for (let key in fieldMappings) {
         if (lower.startsWith(key)) {
           const fieldId = fieldMappings[key];
           const value = transcript.replace(new RegExp("^" + key + "[: ]*", "i"), "");
@@ -172,7 +281,7 @@
           if (field) {
             fieldHistory[fieldId] = field.value;
             field.value = value;
-            field.focus(); // Cursor sichtbar
+            field.focus();
             lastFieldId = fieldId;
           }
           break;
@@ -180,14 +289,21 @@
       }
     }
 
-    function getFieldIdMap() {
-      return {
-        projekt: "project",
-        ziel: "goal",
-        zusammenfassung: "summary",
-        schlussfolgerung: "conclusion",
-        kommentar: "comment"
-      };
+    function setResultColor() {
+      const passed = document.getElementById("passed").checked;
+      const failed = document.getElementById("failed").checked;
+      const status = document.getElementById("resultStatus");
+
+      if (passed) {
+        status.textContent = "Test PASSED";
+        status.style.backgroundColor = "green";
+      } else if (failed) {
+        status.textContent = "Test FAILED";
+        status.style.backgroundColor = "red";
+      } else {
+        status.textContent = "";
+        status.style.backgroundColor = "";
+      }
     }
   </script>
 </body>
