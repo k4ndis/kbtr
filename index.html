@@ -22,6 +22,9 @@
       margin-top: 0.3rem;
       font-size: 1rem;
     }
+    textarea {
+      resize: vertical;
+    }
     button {
       margin-top: 2rem;
       padding: 0.8rem 1.2rem;
@@ -56,6 +59,8 @@
   <script>
     let recognition;
     let recognizing = false;
+    let lastFieldId = null;
+    let fieldHistory = {};
 
     function startRecognition() {
       window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -66,18 +71,14 @@
       recognition.continuous = false;
 
       recognition.onstart = () => {
-        console.log('Spracherkennung gestartet');
         document.getElementById("voiceBtn").innerText = "🛑 Stop voice input";
         document.getElementById("voiceBtn").style.backgroundColor = "green";
       };
 
       recognition.onend = () => {
         if (recognizing) {
-          setTimeout(() => {
-            recognition.start();
-          }, 200); // Verzögerung behebt Chrome-Bug
+          setTimeout(() => recognition.start(), 200);
         } else {
-          console.log("Spracherkennung gestoppt");
           document.getElementById("voiceBtn").innerText = "🎙️ Start voice input";
           document.getElementById("voiceBtn").style.backgroundColor = "";
         }
@@ -114,6 +115,41 @@
 
     function processVoiceInput(transcript) {
       const lower = transcript.toLowerCase();
+
+      // Sonderbefehle: rückgängig, löschen
+      if (lower === "rückgängig") {
+        if (lastFieldId && fieldHistory[lastFieldId]) {
+          document.getElementById(lastFieldId).value = "";
+        }
+        return;
+      }
+
+      const deleteFieldMatch = lower.match(/^lösche (projekt|ziel|zusammenfassung|schlussfolgerung|kommentar)/);
+      if (deleteFieldMatch) {
+        const idMap = getFieldIdMap();
+        const target = idMap[deleteFieldMatch[1]];
+        if (target) document.getElementById(target).value = "";
+        return;
+      }
+
+      const removeWordMatch = lower.match(/^entferne (\w+) bei (projekt|ziel|zusammenfassung|schlussfolgerung|kommentar)/);
+      if (removeWordMatch) {
+        const word = removeWordMatch[1];
+        const idMap = getFieldIdMap();
+        const target = idMap[removeWordMatch[2]];
+        if (target) {
+          const field = document.getElementById(target);
+          field.value = field.value.replace(new RegExp("\\b" + word + "\\b", "gi"), "").trim();
+        }
+        return;
+      }
+
+      if (lower === "letztes wort löschen" && lastFieldId) {
+        const field = document.getElementById(lastFieldId);
+        field.value = field.value.trim().replace(/\s*\S+$/, '');
+        return;
+      }
+
       const fieldMappings = {
         projekt: "project",
         project: "project",
@@ -134,12 +170,24 @@
           const value = transcript.replace(new RegExp("^" + key + "[: ]*", "i"), "");
           const field = document.getElementById(fieldId);
           if (field) {
+            fieldHistory[fieldId] = field.value;
             field.value = value;
-            console.log(`Feld "${fieldId}" mit "${value}" befüllt`);
+            field.focus(); // Cursor sichtbar
+            lastFieldId = fieldId;
           }
           break;
         }
       }
+    }
+
+    function getFieldIdMap() {
+      return {
+        projekt: "project",
+        ziel: "goal",
+        zusammenfassung: "summary",
+        schlussfolgerung: "conclusion",
+        kommentar: "comment"
+      };
     }
   </script>
 </body>
