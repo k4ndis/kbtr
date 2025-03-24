@@ -8,11 +8,19 @@
     body {
       font-family: sans-serif;
       padding: 2rem;
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
+      background-color: #f9f9f9;
     }
     h1 {
       text-align: center;
+    }
+    .form-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     label {
       display: block;
@@ -24,286 +32,179 @@
       padding: 0.5rem;
       margin-top: 0.3rem;
       font-size: 1rem;
-    }
-    textarea {
-      resize: vertical;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     .row {
       display: flex;
       gap: 1rem;
+      flex-wrap: wrap;
     }
     .col {
       flex: 1;
+    }
+    .checkbox-group label {
+      margin-right: 1rem;
     }
     .status {
       font-weight: bold;
       color: white;
       padding: 0.5rem;
+      border-radius: 8px;
       text-align: center;
-      border-radius: 6px;
       margin-top: 0.5rem;
     }
-    #voiceBtn {
+    .green { background-color: #4caf50; }
+    .red { background-color: #f44336; }
+    button {
       margin-top: 2rem;
-      padding: 0.8rem 1.2rem;
+      padding: 0.8rem 1.5rem;
       font-size: 1rem;
-      cursor: pointer;
+      background-color: #1976d2;
+      color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-
   <h1>Test Report – Deckblatt</h1>
+  <div class="form-section">
+    <label for="report">Report</label>
+    <input type="text" id="report">
 
-  <label for="report">Report</label>
-  <input type="text" id="report">
+    <label for="project">Project</label>
+    <input type="text" id="project">
 
-  <label for="project">Project</label>
-  <input type="text" id="project">
+    <label for="test">Test</label>
+    <input type="text" id="test">
 
-  <label for="test">Test</label>
-  <input type="text" id="test">
+    <label for="dvp">DVP</label>
+    <input type="text" id="dvp">
 
-  <label for="dvp">DVP</label>
-  <input type="text" id="dvp">
-
-  <label for="distribution">Distribution list</label>
-  <select id="distribution" multiple>
-    <option>Bonnet</option>
-    <option>Brenner</option>
-    <option>Neuber</option>
-    <option>Schabinger</option>
-  </select>
-
-  <label for="sample">Test sample</label>
-  <input type="text" id="sample">
-
-  <label for="product">Product</label>
-  <input type="text" id="product">
-
-  <label for="productno">Product number</label>
-  <input type="text" id="productno">
-
-  <label for="drawing">Drawing</label>
-  <input type="text" id="drawing">
-
-  <label for="type">Type of test</label>
-  <input type="text" id="type">
-
-  <label for="objective">Objective</label>
-  <textarea id="objective" rows="2"></textarea>
-
-  <label for="summary">Summary Test results</label>
-  <textarea id="summary" rows="2"></textarea>
-
-  <label for="conclusion">Conclusion</label>
-  <textarea id="conclusion" rows="2"></textarea>
-
-  <label>Test result</label>
-  <div class="row">
-    <div class="col">
-      <input type="checkbox" id="passed" onchange="setResultColor()">
-      <label for="passed">Test passed</label>
+    <label>Distribution list</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Bonnet"> Bonnet</label>
+      <label><input type="checkbox" value="Brenner"> Brenner</label>
+      <label><input type="checkbox" value="Neuber"> Neuber</label>
+      <label><input type="checkbox" value="Schabinger"> Schabinger</label>
     </div>
-    <div class="col">
-      <input type="checkbox" id="failed" onchange="setResultColor()">
-      <label for="failed">Test failed</label>
+
+    <label for="sample">Test sample</label>
+    <input type="text" id="sample">
+
+    <label for="product">Product</label>
+    <input type="text" id="product">
+
+    <label for="productno">Product number</label>
+    <input type="text" id="productno">
+
+    <label for="drawing">Drawing</label>
+    <input type="text" id="drawing">
+
+    <label for="type">Type of test</label>
+    <input type="text" id="type">
+
+    <label for="objective">Objective</label>
+    <textarea id="objective"></textarea>
+
+    <label for="summary">Summary Test results</label>
+    <textarea id="summary"></textarea>
+
+    <label for="conclusion">Conclusion</label>
+    <textarea id="conclusion"></textarea>
+
+    <label>Test result</label>
+    <div class="row">
+      <div class="col">
+        <input type="radio" id="passed" name="result" onchange="setResultColor()">
+        <label for="passed">Test passed</label>
+      </div>
+      <div class="col">
+        <input type="radio" id="failed" name="result" onchange="setResultColor()">
+        <label for="failed">Test failed</label>
+      </div>
     </div>
+    <div id="resultStatus" class="status"></div>
+
+    <label for="consequence">Consequences / Comments to the conclusion</label>
+    <textarea id="consequence"></textarea>
+
+    <label>Consequences for similar product types?</label>
+    <select id="yesno" onchange="toggleDescription()">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+
+    <div id="describeBox" style="display:none;">
+      <label for="description">If yes, please describe</label>
+      <textarea id="description"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="begin">Test begin</label>
+        <input type="date" id="begin">
+      </div>
+      <div class="col">
+        <label for="end">Test end</label>
+        <input type="date" id="end">
+      </div>
+    </div>
+
+    <label for="testedby">Tested by</label>
+    <select id="testedby">
+      <option value="">-- select --</option>
+      <option>Bonnet</option>
+      <option>Schabinger</option>
+    </select>
+    <label for="testeddate">Date</label>
+    <input type="date" id="testeddate">
+
+    <label for="createdby">Created by</label>
+    <select id="createdby">
+      <option value="">-- select --</option>
+      <option>Bonnet</option>
+      <option>Schabinger</option>
+    </select>
+    <label for="createddate">Date</label>
+    <input type="date" id="createddate">
+
+    <label for="reviewedby">Reviewed and released by</label>
+    <select id="reviewedby">
+      <option value="">-- select --</option>
+      <option>Bonnet</option>
+      <option>Schabinger</option>
+    </select>
+    <label for="revieweddate">Date</label>
+    <input type="date" id="revieweddate">
+
+    <label for="annex">Annex (Anhang)</label>
+    <input type="text" id="annex">
   </div>
-  <div id="resultStatus" class="status"></div>
-
-  <label for="consequence">Consequences / Comments to the conclusion</label>
-  <textarea id="consequence" rows="2"></textarea>
-
-  <label for="similar">Consequences for similar product types</label>
-  <textarea id="similar" rows="2"></textarea>
-
-  <label>Yes / No</label>
-  <select id="yesno">
-    <option>Yes</option>
-    <option>No</option>
-  </select>
-
-  <label for="description">If yes, please describe</label>
-  <textarea id="description" rows="2"></textarea>
-
-  <div class="row">
-    <div class="col">
-      <label for="begin">Test begin</label>
-      <input type="date" id="begin">
-    </div>
-    <div class="col">
-      <label for="end">Test end</label>
-      <input type="date" id="end">
-    </div>
-  </div>
-
-  <label for="testedby">Tested by</label>
-  <select id="testedby">
-    <option>Bonnet</option>
-    <option>Schabinger</option>
-  </select>
-
-  <label for="testeddate">Date</label>
-  <input type="date" id="testeddate">
-
-  <label for="createdby">Created by</label>
-  <select id="createdby">
-    <option>Bonnet</option>
-    <option>Schabinger</option>
-  </select>
-
-  <label for="createddate">Date</label>
-  <input type="date" id="createddate">
-
-  <label for="reviewedby">Reviewed and released by</label>
-  <select id="reviewedby">
-    <option>Bonnet</option>
-    <option>Schabinger</option>
-  </select>
-
-  <label for="annex">Annex (Anhang)</label>
-  <input type="text" id="annex">
-
   <button id="voiceBtn" onclick="toggleRecognition()">🎙️ Start voice input</button>
 
   <script>
-    let recognition;
-    let recognizing = false;
-    let lastFieldId = null;
-    let fieldHistory = {};
-
-    function startRecognition() {
-      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new window.SpeechRecognition();
-      recognition.lang = ''; // automatische Spracherkennung
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognition.continuous = false;
-
-      recognition.onstart = () => {
-        document.getElementById("voiceBtn").innerText = "🛑 Stop voice input";
-        document.getElementById("voiceBtn").style.backgroundColor = "green";
-      };
-
-      recognition.onend = () => {
-        if (recognizing) {
-          setTimeout(() => recognition.start(), 200);
-        } else {
-          document.getElementById("voiceBtn").innerText = "🎙️ Start voice input";
-          document.getElementById("voiceBtn").style.backgroundColor = "";
-        }
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim();
-        processVoiceInput(transcript);
-      };
-
-      recognition.onerror = (event) => {
-        console.error("Fehler:", event.error);
-      };
-
-      recognition.start();
-      recognizing = true;
-    }
-
-    function stopRecognition() {
-      if (recognition) {
-        recognition.stop();
-        recognizing = false;
-      }
-    }
-
-    function toggleRecognition() {
-      if (recognizing) {
-        stopRecognition();
-      } else {
-        startRecognition();
-      }
-    }
-
-    function processVoiceInput(transcript) {
-      const lower = transcript.toLowerCase();
-
-      if (lower === "rückgängig") {
-        if (lastFieldId && fieldHistory[lastFieldId]) {
-          document.getElementById(lastFieldId).value = fieldHistory[lastFieldId];
-        }
-        return;
-      }
-
-      if (lower.includes("test bestanden")) {
-        document.getElementById("passed").checked = true;
-        document.getElementById("failed").checked = false;
-        setResultColor();
-        return;
-      }
-
-      if (lower.includes("test nicht bestanden") || lower.includes("test failed")) {
-        document.getElementById("failed").checked = true;
-        document.getElementById("passed").checked = false;
-        setResultColor();
-        return;
-      }
-
-      if (lower === "letztes wort löschen" && lastFieldId) {
-        const field = document.getElementById(lastFieldId);
-        field.value = field.value.trim().replace(/\s*\S+$/, '');
-        return;
-      }
-
-      const fieldMappings = {
-        report: "report",
-        projekt: "project",
-        project: "project",
-        test: "test",
-        dvp: "dvp",
-        ziel: "objective",
-        objective: "objective",
-        zusammenfassung: "summary",
-        summary: "summary",
-        schlussfolgerung: "conclusion",
-        conclusion: "conclusion",
-        kommentar: "consequence",
-        consequence: "consequence",
-        ähnlich: "similar",
-        similar: "similar"
-      };
-
-      for (let key in fieldMappings) {
-        if (lower.startsWith(key)) {
-          const fieldId = fieldMappings[key];
-          const value = transcript.replace(new RegExp("^" + key + "[: ]*", "i"), "");
-          const field = document.getElementById(fieldId);
-          if (field) {
-            fieldHistory[fieldId] = field.value;
-            field.value = value;
-            field.focus();
-            lastFieldId = fieldId;
-          }
-          break;
-        }
-      }
-    }
-
     function setResultColor() {
-      const passed = document.getElementById("passed").checked;
-      const failed = document.getElementById("failed").checked;
       const status = document.getElementById("resultStatus");
-
-      if (passed) {
+      if (document.getElementById("passed").checked) {
         status.textContent = "Test PASSED";
-        status.style.backgroundColor = "green";
-      } else if (failed) {
+        status.className = "status green";
+      } else if (document.getElementById("failed").checked) {
         status.textContent = "Test FAILED";
-        status.style.backgroundColor = "red";
+        status.className = "status red";
       } else {
         status.textContent = "";
-        status.style.backgroundColor = "";
+        status.className = "status";
       }
+    }
+    function toggleDescription() {
+      const value = document.getElementById("yesno").value;
+      document.getElementById("describeBox").style.display = value === "yes" ? "block" : "none";
+    }
+    function toggleRecognition() {
+      alert("Sprachsteuerung folgt im nächsten Schritt.");
     }
   </script>
 </body>
