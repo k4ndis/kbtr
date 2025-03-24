@@ -2,202 +2,241 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Testbericht Deckblatt</title>
+  <title>Testbericht – Deckblatt</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
       padding: 2rem;
+    }
+    .container {
       max-width: 1000px;
       margin: auto;
-      background-color: #f9f9f9;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     h1 {
       text-align: center;
+      margin-bottom: 2rem;
     }
-    .form-section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-top: 2rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
     }
     label {
-      display: block;
-      margin-top: 1rem;
       font-weight: bold;
+      margin-bottom: 0.25rem;
+      display: block;
     }
     input, select, textarea {
       width: 100%;
       padding: 0.5rem;
-      margin-top: 0.3rem;
-      font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 6px;
+      font-size: 1rem;
     }
-    .row {
+    textarea { resize: vertical; }
+    .checkbox-group {
       display: flex;
-      gap: 1rem;
       flex-wrap: wrap;
-    }
-    .col {
-      flex: 1;
+      gap: 1rem;
     }
     .checkbox-group label {
-      margin-right: 1rem;
+      font-weight: normal;
     }
-    .status {
-      font-weight: bold;
-      color: white;
+    .status-box {
       padding: 0.5rem;
-      border-radius: 8px;
       text-align: center;
+      font-weight: bold;
+      border-radius: 6px;
+      color: white;
       margin-top: 0.5rem;
     }
     .green { background-color: #4caf50; }
     .red { background-color: #f44336; }
-    button {
+    .button-container {
+      text-align: center;
       margin-top: 2rem;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
+    }
+    button {
       background-color: #1976d2;
       color: white;
       border: none;
-      border-radius: 6px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
+<div class="container">
   <h1>Test Report – Deckblatt</h1>
-  <div class="form-section">
-    <!-- Formularfelder wie gehabt -->
-    <!-- (Aus Platzgründen hier ausgelassen, aber im echten Code enthalten) -->
+  <div class="grid">
+    <div><label for="report">Report</label><input id="report"></div>
+    <div><label for="project">Project</label><input id="project"></div>
+    <div><label for="test">Test</label><input id="test"></div>
+    <div><label for="dvp">DVP</label><input id="dvp"></div>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Bonnet"> Bonnet</label>
+      <label><input type="checkbox" value="Brenner"> Brenner</label>
+      <label><input type="checkbox" value="Neuber"> Neuber</label>
+      <label><input type="checkbox" value="Schabinger"> Schabinger</label>
+    </div>
+    <div><label for="sample">Test sample</label><input id="sample"></div>
+    <div><label for="product">Product</label><input id="product"></div>
+    <div><label for="productno">Product number</label><input id="productno"></div>
+    <div><label for="drawing">Drawing</label><input id="drawing"></div>
+    <div><label for="type">Type of test</label><input id="type"></div>
+    <div><label for="objective">Objective</label><textarea id="objective"></textarea></div>
+    <div><label for="summary">Summary Test results</label><textarea id="summary"></textarea></div>
+    <div><label for="conclusion">Conclusion</label><textarea id="conclusion"></textarea></div>
+    <div>
+      <label>Test result</label>
+      <input type="radio" name="result" id="passed" onchange="setResultColor()"> Passed
+      <input type="radio" name="result" id="failed" onchange="setResultColor()"> Failed
+      <div id="resultStatus" class="status-box"></div>
+    </div>
+    <div><label for="consequence">Consequences / Comments to the conclusion</label><textarea id="consequence"></textarea></div>
+    <div>
+      <label>Consequences for similar product types?</label>
+      <select id="yesno" onchange="toggleDescription()">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+    </div>
+    <div id="describeBox" style="display:none;"><label for="description">If yes, please describe</label><textarea id="description"></textarea></div>
+    <div><label for="begin">Test begin</label><input type="date" id="begin"></div>
+    <div><label for="end">Test end</label><input type="date" id="end"></div>
+    <div><label for="testedby">Tested by</label><select id="testedby"><option>Bonnet</option><option>Schabinger</option></select></div>
+    <div><label for="testeddate">Date</label><input type="date" id="testeddate"></div>
+    <div><label for="createdby">Created by</label><select id="createdby"><option>Bonnet</option><option>Schabinger</option></select></div>
+    <div><label for="createddate">Date</label><input type="date" id="createddate"></div>
+    <div><label for="reviewedby">Reviewed and released by</label><select id="reviewedby"><option>Bonnet</option><option>Schabinger</option></select></div>
+    <div><label for="revieweddate">Date</label><input type="date" id="revieweddate"></div>
+    <div><label for="annex">Annex (Anhang)</label><input id="annex"></div>
   </div>
-  <button id="voiceBtn" onclick="toggleRecognition()">🎙️ Start voice input</button>
+  <div class="button-container">
+    <button id="voiceBtn" onclick="toggleRecognition()">🎙️ Start voice input</button>
+  </div>
+</div>
+<script>
+  const fields = {
+    report: ["report", "bericht"],
+    project: ["project", "projekt"],
+    test: ["test"],
+    dvp: ["dvp"],
+    sample: ["test sample", "prüfmuster"],
+    product: ["product", "produkt"],
+    productno: ["product number", "produktnummer"],
+    drawing: ["drawing", "zeichnung"],
+    type: ["type of test", "testtyp", "typ"],
+    objective: ["objective", "ziel"],
+    summary: ["summary", "zusammenfassung"],
+    conclusion: ["conclusion", "schlussfolgerung"],
+    consequence: ["consequence", "kommentar"],
+    description: ["description", "beschreibung"],
+    annex: ["annex", "anhang", "anlage"]
+  };
 
-  <script>
-    const fields = {
-      report: ["report", "bericht"],
-      project: ["project", "projekt"],
-      test: ["test"],
-      dvp: ["dvp"],
-      sample: ["test sample", "prüfmuster"],
-      product: ["product", "produkt"],
-      productno: ["product number", "produktnummer"],
-      drawing: ["drawing", "zeichnung"],
-      type: ["type of test", "testtyp", "typ des tests"],
-      objective: ["objective", "ziel"],
-      summary: ["summary", "zusammenfassung"],
-      conclusion: ["conclusion", "schlussfolgerung"],
-      consequence: ["consequences", "kommentar", "comments to the conclusion"],
-      description: ["describe", "beschreibung"],
-      annex: ["annex", "anhang", "anlage", "attachment"]
-    };
+  let recognition;
+  let isRecognizing = false;
 
-    let recognition;
-    let isRecognizing = false;
-
-    function toggleRecognition() {
-      if (!('webkitSpeechRecognition' in window)) {
-        alert('Speech recognition not supported');
-        return;
-      }
-
-      if (!recognition) {
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'de-DE';
-        recognition.interimResults = false;
-        recognition.continuous = false;
-
-        recognition.onresult = function(event) {
-          const transcript = event.results[0][0].transcript.trim();
-          handleTranscript(transcript);
-          if (isRecognizing) recognition.start(); // restart automatically
-        };
-
-        recognition.onerror = function() {
-          if (isRecognizing) recognition.start();
-        };
-      }
-
-      if (!isRecognizing) {
-        recognition.start();
-        isRecognizing = true;
-        document.getElementById("voiceBtn").textContent = "🛑 Stop voice input";
-      } else {
-        recognition.stop();
-        isRecognizing = false;
-        document.getElementById("voiceBtn").textContent = "🎙️ Start voice input";
+  function toggleRecognition() {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Speech recognition not supported'); return;
+    }
+    if (!recognition) {
+      recognition = new webkitSpeechRecognition();
+      recognition.lang = 'de-DE';
+      recognition.interimResults = false;
+      recognition.continuous = false;
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript.trim();
+        handleTranscript(transcript);
+        if (isRecognizing) recognition.start();
+      };
+      recognition.onerror = function() {
+        if (isRecognizing) recognition.start();
       }
     }
+    if (!isRecognizing) {
+      recognition.start();
+      isRecognizing = true;
+      document.getElementById("voiceBtn").textContent = "🛑 Stop voice input";
+    } else {
+      recognition.stop();
+      isRecognizing = false;
+      document.getElementById("voiceBtn").textContent = "🎙️ Start voice input";
+    }
+  }
 
-    function handleTranscript(text) {
-      const lower = text.toLowerCase();
-
-      if (lower.includes("rückgängig")) return undoLastWord();
-      if (lower.includes("letztes wort löschen")) return undoLastWord();
-
-      for (const [id, keywords] of Object.entries(fields)) {
-        for (const keyword of keywords) {
-          if (lower.startsWith(keyword.toLowerCase())) {
-            const value = lower.replace(keyword.toLowerCase(), '').trim();
-            const el = document.getElementById(id);
-            if (el) {
-              if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
-                el.value += (el.value ? ' ' : '') + value;
-              }
-            }
-            return;
+  function handleTranscript(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes("rückgängig") || lower.includes("letztes wort löschen")) return undoLastWord();
+    for (const [id, keys] of Object.entries(fields)) {
+      for (const k of keys) {
+        if (lower.startsWith(k.toLowerCase())) {
+          const val = lower.replace(k.toLowerCase(), '').trim();
+          const el = document.getElementById(id);
+          if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+            el.value += (el.value ? ' ' : '') + val;
           }
+          return;
         }
       }
-
-      if (lower.includes("test bestanden") || lower.includes("test passed")) {
-        document.getElementById("passed").checked = true;
-        setResultColor();
-      } else if (lower.includes("test nicht bestanden") || lower.includes("test failed")) {
-        document.getElementById("failed").checked = true;
-        setResultColor();
-      }
-
-      if (lower.includes("verteile an")) {
-        const names = ["bonnet", "brenner", "neuber", "schabinger"];
-        names.forEach(name => {
-          if (lower.includes(name)) {
-            document.querySelectorAll(`input[type='checkbox'][value='${name.charAt(0).toUpperCase() + name.slice(1)}']`)[0].checked = true;
-          }
-        });
-      }
     }
-
-    function undoLastWord() {
-      const active = document.activeElement;
-      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
-        const words = active.value.trim().split(" ");
-        words.pop();
-        active.value = words.join(" ");
-      }
+    if (lower.includes("test bestanden") || lower.includes("test passed")) {
+      document.getElementById("passed").checked = true;
+      setResultColor();
+    } else if (lower.includes("test nicht bestanden") || lower.includes("test failed")) {
+      document.getElementById("failed").checked = true;
+      setResultColor();
     }
-
-    function setResultColor() {
-      const status = document.getElementById("resultStatus");
-      if (document.getElementById("passed").checked) {
-        status.textContent = "Test PASSED";
-        status.className = "status green";
-      } else if (document.getElementById("failed").checked) {
-        status.textContent = "Test FAILED";
-        status.className = "status red";
-      } else {
-        status.textContent = "";
-        status.className = "status";
-      }
+    if (lower.includes("verteile an")) {
+      const list = ["bonnet", "brenner", "neuber", "schabinger"];
+      list.forEach(name => {
+        if (lower.includes(name)) {
+          const cb = [...document.querySelectorAll('input[type=checkbox]')].find(e => e.value.toLowerCase() === name);
+          if (cb) cb.checked = true;
+        }
+      });
     }
+  }
 
-    function toggleDescription() {
-      const value = document.getElementById("yesno").value;
-      document.getElementById("describeBox").style.display = value === "yes" ? "block" : "none";
+  function undoLastWord() {
+    const el = document.activeElement;
+    if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+      const parts = el.value.trim().split(" ");
+      parts.pop();
+      el.value = parts.join(" ");
     }
-  </script>
+  }
+
+  function setResultColor() {
+    const box = document.getElementById("resultStatus");
+    if (document.getElementById("passed").checked) {
+      box.textContent = "Test PASSED";
+      box.className = "status-box green";
+    } else if (document.getElementById("failed").checked) {
+      box.textContent = "Test FAILED";
+      box.className = "status-box red";
+    } else {
+      box.textContent = "";
+      box.className = "status-box";
+    }
+  }
+
+  function toggleDescription() {
+    const show = document.getElementById("yesno").value === "yes";
+    document.getElementById("describeBox").style.display = show ? "block" : "none";
+  }
+</script>
 </body>
 </html>
