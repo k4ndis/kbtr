@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Testbericht Sprachsteuerung</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Testbericht (Sprachsteuerung)</h1>
+
+  <label for="project">Projekt</label>
+  <input type="text" id="project" placeholder="z. B. FBM" />
+
+  <label for="goal">Ziel</label>
+  <input type="text" id="goal" placeholder="z. B. Lebensdauerprüfung" />
+
+  <label for="summary">Zusammenfassung</label>
+  <textarea id="summary" rows="3" placeholder="Kurze Zusammenfassung…"></textarea>
+
+  <label for="conclusion">Schlussfolgerung</label>
+  <textarea id="conclusion" rows="3" placeholder="z. B. Test nicht bestanden…"></textarea>
+
+  <label for="comment">Kommentar</label>
+  <textarea id="comment" rows="2" placeholder="Anmerkungen oder Hinweise…"></textarea>
+
+  <button id="voiceBtn" onclick="toggleRecognition()">🎙️ Start voice input</button>
+
+  <script>
+    let recognition;
+    let recognizing = false;
+
+    function startRecognition() {
+      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new window.SpeechRecognition();
+      recognition.lang = 'de-DE';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.continuous = false;
+
+      recognition.onstart = () => {
+        console.log('Spracherkennung gestartet');
+        document.getElementById("voiceBtn").innerText = "🛑 Stop voice input";
+        document.getElementById("voiceBtn").style.backgroundColor = "green";
+      };
+
+      recognition.onend = () => {
+        if (recognizing) {
+          setTimeout(() => {
+            recognition.start();
+          }, 200); // Verzögerung behebt Chrome-Bug
+        } else {
+          console.log("Spracherkennung gestoppt");
+          document.getElementById("voiceBtn").innerText = "🎙️ Start voice input";
+          document.getElementById("voiceBtn").style.backgroundColor = "";
+        }
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        console.log("Erkannt:", transcript);
+        processVoiceInput(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Fehler:", event.error);
+      };
+
+      recognition.start();
+      recognizing = true;
+    }
+
+    function stopRecognition() {
+      if (recognition) {
+        recognition.stop();
+        recognizing = false;
+      }
+    }
+
+    function toggleRecognition() {
+      if (recognizing) {
+        stopRecognition();
+      } else {
+        startRecognition();
+      }
+    }
+
+    function processVoiceInput(transcript) {
+      const lower = transcript.toLowerCase();
+      const fieldMappings = {
+        projekt: "project",
+        project: "project",
+        ziel: "goal",
+        goal: "goal",
+        zusammenfassung: "summary",
+        summary: "summary",
+        schlussfolgerung: "conclusion",
+        conclusion: "conclusion",
+        kommentar: "comment",
+        comment: "comment"
+      };
+
+      const keys = Object.keys(fieldMappings);
+      for (let key of keys) {
+        if (lower.startsWith(key)) {
+          const fieldId = fieldMappings[key];
+          const value = transcript.replace(new RegExp("^" + key + "[: ]*", "i"), "");
+          const field = document.getElementById(fieldId);
+          if (field) {
+            field.value = value;
+            console.log(`Feld "${fieldId}" mit "${value}" befüllt`);
+          }
+          break;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
