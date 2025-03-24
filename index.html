@@ -2,50 +2,54 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Testbericht – Deckblatt</title>
+  <title>Testbericht – Material Design</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
       margin: 0;
-      padding: 2rem;
+      font-family: 'Roboto', sans-serif;
+      background: #f5f5f5;
     }
     .container {
-      max-width: 1000px;
-      margin: auto;
-      background: white;
+      max-width: 1100px;
+      margin: 2rem auto;
       padding: 2rem;
+      background: white;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     h1 {
       text-align: center;
       margin-bottom: 2rem;
+      color: #333;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
     }
     label {
-      font-weight: bold;
+      font-weight: 500;
       margin-bottom: 0.25rem;
       display: block;
+      color: #333;
     }
     input, select, textarea {
       width: 100%;
-      padding: 0.5rem;
+      padding: 0.75rem;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 1rem;
+      background: #fafafa;
     }
-    textarea { resize: vertical; }
+    textarea { resize: vertical; min-height: 60px; }
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
+      padding: 0.5rem 0;
     }
     .checkbox-group label {
       font-weight: normal;
@@ -60,17 +64,18 @@
     }
     .green { background-color: #4caf50; }
     .red { background-color: #f44336; }
-    .button-container {
-      text-align: center;
-      margin-top: 2rem;
-    }
-    button {
+    .floating-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
       background-color: #1976d2;
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 8px;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       cursor: pointer;
     }
   </style>
@@ -122,103 +127,9 @@
     <div><label for="revieweddate">Date</label><input type="date" id="revieweddate"></div>
     <div><label for="annex">Annex (Anhang)</label><input id="annex"></div>
   </div>
-  <div class="button-container">
-    <button id="voiceBtn" onclick="toggleRecognition()">🎙️ Start voice input</button>
-  </div>
 </div>
+<button id="voiceBtn" class="floating-button" onclick="toggleRecognition()">🎙️</button>
 <script>
-  const fields = {
-    report: ["report", "bericht"],
-    project: ["project", "projekt"],
-    test: ["test"],
-    dvp: ["dvp"],
-    sample: ["test sample", "prüfmuster"],
-    product: ["product", "produkt"],
-    productno: ["product number", "produktnummer"],
-    drawing: ["drawing", "zeichnung"],
-    type: ["type of test", "testtyp", "typ"],
-    objective: ["objective", "ziel"],
-    summary: ["summary", "zusammenfassung"],
-    conclusion: ["conclusion", "schlussfolgerung"],
-    consequence: ["consequence", "kommentar"],
-    description: ["description", "beschreibung"],
-    annex: ["annex", "anhang", "anlage"]
-  };
-
-  let recognition;
-  let isRecognizing = false;
-
-  function toggleRecognition() {
-    if (!('webkitSpeechRecognition' in window)) {
-      alert('Speech recognition not supported'); return;
-    }
-    if (!recognition) {
-      recognition = new webkitSpeechRecognition();
-      recognition.lang = 'de-DE';
-      recognition.interimResults = false;
-      recognition.continuous = false;
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript.trim();
-        handleTranscript(transcript);
-        if (isRecognizing) recognition.start();
-      };
-      recognition.onerror = function() {
-        if (isRecognizing) recognition.start();
-      }
-    }
-    if (!isRecognizing) {
-      recognition.start();
-      isRecognizing = true;
-      document.getElementById("voiceBtn").textContent = "🛑 Stop voice input";
-    } else {
-      recognition.stop();
-      isRecognizing = false;
-      document.getElementById("voiceBtn").textContent = "🎙️ Start voice input";
-    }
-  }
-
-  function handleTranscript(text) {
-    const lower = text.toLowerCase();
-    if (lower.includes("rückgängig") || lower.includes("letztes wort löschen")) return undoLastWord();
-    for (const [id, keys] of Object.entries(fields)) {
-      for (const k of keys) {
-        if (lower.startsWith(k.toLowerCase())) {
-          const val = lower.replace(k.toLowerCase(), '').trim();
-          const el = document.getElementById(id);
-          if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
-            el.value += (el.value ? ' ' : '') + val;
-          }
-          return;
-        }
-      }
-    }
-    if (lower.includes("test bestanden") || lower.includes("test passed")) {
-      document.getElementById("passed").checked = true;
-      setResultColor();
-    } else if (lower.includes("test nicht bestanden") || lower.includes("test failed")) {
-      document.getElementById("failed").checked = true;
-      setResultColor();
-    }
-    if (lower.includes("verteile an")) {
-      const list = ["bonnet", "brenner", "neuber", "schabinger"];
-      list.forEach(name => {
-        if (lower.includes(name)) {
-          const cb = [...document.querySelectorAll('input[type=checkbox]')].find(e => e.value.toLowerCase() === name);
-          if (cb) cb.checked = true;
-        }
-      });
-    }
-  }
-
-  function undoLastWord() {
-    const el = document.activeElement;
-    if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
-      const parts = el.value.trim().split(" ");
-      parts.pop();
-      el.value = parts.join(" ");
-    }
-  }
-
   function setResultColor() {
     const box = document.getElementById("resultStatus");
     if (document.getElementById("passed").checked) {
@@ -232,11 +143,11 @@
       box.className = "status-box";
     }
   }
-
   function toggleDescription() {
     const show = document.getElementById("yesno").value === "yes";
     document.getElementById("describeBox").style.display = show ? "block" : "none";
   }
+  // Sprachsteuerung folgt im nächsten Schritt wieder integriert
 </script>
 </body>
 </html>
